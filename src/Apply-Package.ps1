@@ -107,6 +107,22 @@ try {
         foreach ($base in $manifest.baseline) {
             if ([IO.Path]::IsPathRooted($base.name) -or $base.name -match '(^|[\\/])\.\.([\\/]|$)') { throw 'Unsafe baseline path.' }
             $basePath = Join-Path $root $base.name
+            if ($base.name -ceq 'Maps.big') {
+                if (-not (Test-Path -LiteralPath $basePath -PathType Leaf)) { throw 'Maps.big is missing. Repair the game installation first.' }
+                $mapStream = [IO.File]::OpenRead($basePath)
+                try {
+                    $header = New-Object byte[] 16
+                    if ($mapStream.Read($header, 0, 16) -ne 16) { throw 'Maps.big is truncated. Repair the game installation first.' }
+                    $magic = [Text.Encoding]::ASCII.GetString($header, 0, 4)
+                    if ($magic -ne 'BIGF' -and $magic -ne 'BIG4') { throw 'Maps.big is not a recognized BIG archive. Repair the game installation first.' }
+                    [long]$indexEnd = ([long]$header[12] * 16777216) + ([long]$header[13] * 65536) + ([long]$header[14] * 256) + $header[15]
+                    if ($indexEnd -lt 16 -or $indexEnd -gt $mapStream.Length) { throw 'Maps.big has an invalid archive header. Repair the game installation first.' }
+                } finally { $mapStream.Dispose() }
+                if ((Get-PathHash $basePath) -ne $base.sha256) {
+                    Write-Warning 'Maps.big differs from the reference 1.00 copy. Keeping your maps unchanged; map-specific gameplay and multiplayer compatibility are not verified.'
+                }
+                continue
+            }
             if (-not (Test-Path -LiteralPath $basePath) -or (Get-PathHash $basePath) -ne $base.sha256) {
                 throw "Base data is not verified 1.00: $($base.name). Select 1.00 in the switcher first."
             }

@@ -63,7 +63,7 @@ namespace BfmeTestLab {
   }
   public static Release FetchRelease() {
    ServicePointManager.SecurityProtocol=SecurityProtocolType.Tls12;
-   using(var w=new WebClient()) { w.Headers["User-Agent"]="BFME2-Test-Lab/1.0.0"; return Json<Release>(w.DownloadString("https://api.github.com/repos/"+Repository+"/releases/latest")); }
+   using(var w=new WebClient()) { w.Headers["User-Agent"]="BFME2-Test-Lab/1.0.1"; return Json<Release>(w.DownloadString("https://api.github.com/repos/"+Repository+"/releases/latest")); }
   }
   public static string DownloadLatest() {
    var r=FetchRelease();var assets=r.assets.Where(item=>item.name=="BFME2-TestPackage.zip").ToArray();
@@ -71,7 +71,7 @@ namespace BfmeTestLab {
    var a=assets[0];
    if(a.size<1 || a.size>150000000 || !a.browser_download_url.StartsWith("https://github.com/"+Repository+"/releases/download/",StringComparison.Ordinal) || a.digest==null || !a.digest.StartsWith("sha256:")) throw new Exception("Invalid release asset or missing checksum.");
    Directory.CreateDirectory(Home);string temp=Path.Combine(Home,Guid.NewGuid().ToString("N")+".zip");
-   try { using(var w=new WebClient()) { w.Headers["User-Agent"]="BFME2-Test-Lab/1.0.0"; w.DownloadFile(a.browser_download_url,temp); }
+   try { using(var w=new WebClient()) { w.Headers["User-Agent"]="BFME2-Test-Lab/1.0.1"; w.DownloadFile(a.browser_download_url,temp); }
     if(new FileInfo(temp).Length!=a.size || "sha256:"+Hash(temp)!=a.digest) throw new Exception("Downloaded package checksum failed.");return Import(temp);
    } finally { if(File.Exists(temp)) File.Delete(temp); }
   }
@@ -80,7 +80,7 @@ namespace BfmeTestLab {
   TextBox game=new TextBox(),log=new TextBox(); Label selected=new Label(),state=new Label();
   string packageDir; bool busy; List<Button> buttons=new List<Button>();
   public MainWindow() {
-   Text="BFME2 Test Lab"; ClientSize=new Size(660,530); MinimumSize=new Size(680,570); Font=new Font("Segoe UI",10);StartPosition=FormStartPosition.CenterScreen;
+   Text="BFME2 Test Lab 1.0.1"; ClientSize=new Size(660,530); MinimumSize=new Size(680,570); Font=new Font("Segoe UI",10);StartPosition=FormStartPosition.CenterScreen;
    BackColor=Color.FromArgb(245,247,250);
    var heading=new Label {Text="BFME2 · 1.00 Test Lab",Font=new Font("Segoe UI",18,FontStyle.Bold),AutoSize=true,Location=new Point(20,16)};Controls.Add(heading);
    Controls.Add(new Label {Text="Apply a test build, restore original files, or download the latest test.",AutoSize=true,Location=new Point(22,56)});

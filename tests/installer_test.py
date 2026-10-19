@@ -1,7 +1,7 @@
 from pathlib import Path
 import json,shutil,subprocess,hashlib,uuid
 root=Path(__file__).resolve().parents[1]
-pkg=root/'build/BFME2-Test-Lab'
+pkg=root/('build/BFME2-Test-Lab-'+(root/'version.txt').read_text().strip())
 source=root.parent/'dist/BFME2-1.00-Hybrid-Test04'
 old=root.parent/'dist/BFME2-1.00-Hybrid-Test03'
 switcher=Path(r"C:\Program Files (x86)\BFME2 Ecth's Patch Switcher\100")
@@ -16,7 +16,22 @@ def state(which):
 def run(action,expected=0,selected='Test04'):
  r=subprocess.run(['powershell.exe','-NoProfile','-ExecutionPolicy','Bypass','-File',str(pkg/'Apply-Package.ps1'),'-Action',action,'-GameDirectory',str(game),'-PackageDirectory',str(cache/selected),'-CacheDirectory',str(cache)],capture_output=True,text=True)
  results.append({'action':action,'selected':selected,'expected':expected,'exit':r.returncode,'output':r.stdout+r.stderr});assert r.returncode==expected,r.stdout+r.stderr
-run('Validate');state('original');run('Install');state('patched');run('Install');state('patched');run('Restore');state('original')
+run('Validate');state('original')
+# A readable different map archive is preserved, not a reason to reject core patching.
+with (game/'Maps.big').open('ab') as f:f.write(b'map-variant-fixture')
+map_hash=sha(game/'Maps.big')
+run('Validate');assert 'Maps.big differs' in results[-1]['output']
+run('Install');state('patched');assert sha(game/'Maps.big')==map_hash
+run('Restore');state('original');assert sha(game/'Maps.big')==map_hash
+(game/'Maps.big').rename(game/'Maps.saved')
+run('Install',1);state('original')
+(game/'Maps.big').write_bytes(b'not a BIG archive')
+run('Install',1);state('original')
+shutil.copyfile(switcher/'Maps.big',game/'Maps.big')
+with (game/'Data1.big').open('ab') as f:f.write(b'changed-core')
+run('Install',1);state('original')
+shutil.copyfile(switcher/'Data1.big',game/'Data1.big')
+run('Install');state('patched');run('Install');state('patched');run('Restore');state('original')
 run('Install',selected='Test03');run('Install');state('patched');run('Restore');state('original')
 # Existing standalone Test04 backup migration.
 backup=game/'_BFME2_100_Hybrid04_Backup';backup.mkdir()

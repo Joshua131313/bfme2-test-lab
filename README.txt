@@ -1,4 +1,4 @@
-BFME2 Test Lab 1.0.0
+BFME2 Test Lab 1.0.1
 
 A small Windows application for testing BFME2 1.00 hybrid patches.
 
@@ -36,7 +36,9 @@ its hashes, then load/download the newer ZIP. Restore before using a different
 patch switcher. Close the game before Test changes or Restore game.
 
 The app replaces only game.dat, INI.big and lotrbfme2.exe. It verifies original
-baseline data, payload hashes, backups and staged outputs. Failed installs
+core baseline data, payload hashes, backups and staged outputs. A different
+readable Maps.big produces a warning and is left unchanged; missing or invalid
+map archives are refused. Map-specific gameplay compatibility is not certified. Failed installs
 attempt rollback. Unknown files are refused. Map packs and optional DLLs are
 not changed. These can still affect gameplay. Backups stay in the game folder
 under _BFME2_TestLab_Backup; previous test backup folders are retained.
@@ -57,3 +59,8 @@ The source repository contains the app/installer source, not game payloads.
 Release assets hold the test packages. The app does not collect telemetry.
 
 Source and releases: https://github.com/Joshua131313/bfme2-test-lab
+
+UPDATING FROM 1.0.0
+Close the old app, extract this app ZIP, and run Install.cmd again (or run the
+new EXE directly). Get latest files updates game packages, not the app itself.
+There is no need to restore the game just to update this application.
