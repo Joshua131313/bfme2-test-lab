@@ -1,4 +1,4 @@
-BFME2 Test Lab 1.0.3
+BFME2 Test Lab 1.0.4
 
 A small Windows application for testing BFME2 1.00 hybrid patches.
 
@@ -78,3 +78,9 @@ Its exact bytes are preserved in _BFME2_TestLab_Variant_Backup, with a hash
 record used for reinstall and restore. Corrupt backups are refused. Unknown
 versions still stop and print diagnostics. Launcher and INI checks remain
 strict. This cannot guarantee compatibility with an unseen executable.
+
+LEGACY TEST01 MIGRATION (1.0.4)
+The exact released Test01 game.dat and INI.big hashes are recognized without
+importing its older format-1 package. Its verified original backups under
+_BFME2_100_Test01_Backup are reused for upgrade/restore. Missing or corrupt
+original backups still stop installation rather than treating Test01 as stock.

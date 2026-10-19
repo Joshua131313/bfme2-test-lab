@@ -108,6 +108,9 @@ try {
     }
     $knownHashes = @{}
     foreach ($fileName in $names) { $knownHashes[$fileName] = @() }
+    # Test01 predates format-2 ZIP packages; recognize only its exact released hashes.
+    $knownHashes['game.dat'] += '75951f2e57d85ccb24a8a983872138db3c82359b9ea5391baaea33048a3e32a7'
+    $knownHashes['INI.big'] += 'b192e711467985bc0f8a45f8fd5e6c84915592f2c65792bc47a213fb0e8a793a'
     foreach ($cached in @(Get-ChildItem -LiteralPath $CacheDirectory -Directory -ErrorAction SilentlyContinue)) {
         $cachedManifest = Join-Path $cached.FullName 'patch.json'
         if (-not (Test-Path -LiteralPath $cachedManifest)) { continue }
