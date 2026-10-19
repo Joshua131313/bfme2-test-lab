@@ -1,4 +1,4 @@
-BFME2 Test Lab 1.0.2
+BFME2 Test Lab 1.0.3
 
 A small Windows application for testing BFME2 1.00 hybrid patches.
 
@@ -67,3 +67,14 @@ Close the old app, extract this app ZIP, and run Install.cmd again (or run the
 new EXE directly). Get latest files updates game packages, not the app itself.
 There is no need to restore the game just to update this application.
 Once version 1.0.2 is installed, future app updates use Update app.
+
+ENGINE IDENTIFICATION (1.0.3)
+Check files prints version, size and SHA-256 of the engine, launcher and INI.
+A different game.dat can be replaced if its embedded version is exactly
+1.0.2194.40862, its x86 PE layout passes structural checks, and original 1.00
+INI and core data checks pass. This identifies a candidate variant, not an
+authenticated original binary. The executable is not run during detection.
+Its exact bytes are preserved in _BFME2_TestLab_Variant_Backup, with a hash
+record used for reinstall and restore. Corrupt backups are refused. Unknown
+versions still stop and print diagnostics. Launcher and INI checks remain
+strict. This cannot guarantee compatibility with an unseen executable.

@@ -52,4 +52,24 @@ lock.write_text("$f=[IO.File]::Open($args[0],[IO.FileMode]::Open,[IO.FileAccess]
 r=subprocess.run(['powershell.exe','-NoProfile','-ExecutionPolicy','Bypass','-File',str(lock),str(game/'INI.big'),str(pkg/'Apply-Package.ps1'),str(game),str(cache/'Test04'),str(cache)],capture_output=True,text=True)
 assert r.returncode==1 and 'Rolled back game.dat' in r.stdout,r.stdout+r.stderr
 state('original');results.append({'action':'locked file rollback','output':r.stdout})
+# Alternate 1.00-labelled executable: preserve its exact original bytes.
+variant=bytearray((switcher/'game.dat').read_bytes());variant[0x40]^=1
+(game/'game.dat').write_bytes(variant);variant_hash=sha(game/'game.dat')
+run('Validate');assert '1.00 with a different hash' in results[-1]['output']
+run('Install');state('patched')
+variant_backup=game/'_BFME2_TestLab_Variant_Backup/game.dat.original'
+assert sha(variant_backup)==variant_hash
+run('Install');state('patched')
+run('Restore');assert sha(game/'game.dat')==variant_hash
+run('Restore');assert sha(game/'game.dat')==variant_hash
+run('Install');state('patched')
+with variant_backup.open('ab') as f:f.write(b'tamper')
+run('Restore',1);state('patched')
+variant_backup.write_bytes(variant)
+run('Restore');assert sha(game/'game.dat')==variant_hash
+# A different official patch's executable must remain unsupported.
+shutil.copyfile(switcher.parent/'106/game.dat',game/'game.dat')
+foreign_hash=sha(game/'game.dat');run('Install',1);assert sha(game/'game.dat')==foreign_hash
+(game/'game.dat').write_bytes(b'MZ truncated')
+run('Install',1);assert (game/'game.dat').read_bytes()==b'MZ truncated'
 (root/'test-output/installer-results.json').write_text(json.dumps(results,indent=2));print('PASS:',len(results),'installer scenarios')

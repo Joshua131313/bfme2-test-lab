@@ -11,8 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
-[assembly: System.Reflection.AssemblyVersion("1.0.2.0")]
-[assembly: System.Reflection.AssemblyFileVersion("1.0.2.0")]
+[assembly: System.Reflection.AssemblyVersion("1.0.3.0")]
+[assembly: System.Reflection.AssemblyFileVersion("1.0.3.0")]
 
 namespace BfmeTestLab {
  public class FileRecord { public string name; public long original_size; public string original_sha256; public long patched_size; public string patched_sha256; }
@@ -65,7 +65,7 @@ namespace BfmeTestLab {
   }
   public static Release FetchRelease() {
    ServicePointManager.SecurityProtocol=SecurityProtocolType.Tls12;
-   using(var w=new WebClient()) { w.Headers["User-Agent"]="BFME2-Test-Lab/1.0.1"; return Json<Release>(w.DownloadString("https://api.github.com/repos/"+Repository+"/releases/latest")); }
+   using(var w=new WebClient()) { w.Headers["User-Agent"]="BFME2-Test-Lab/"+AppUpdate.CurrentVersion; return Json<Release>(w.DownloadString("https://api.github.com/repos/"+Repository+"/releases/latest")); }
   }
   public static string DownloadLatest() {
    var r=FetchRelease();var assets=r.assets.Where(item=>item.name=="BFME2-TestPackage.zip").ToArray();
@@ -73,7 +73,7 @@ namespace BfmeTestLab {
    var a=assets[0];
    if(a.size<1 || a.size>150000000 || !a.browser_download_url.StartsWith("https://github.com/"+Repository+"/releases/download/",StringComparison.Ordinal) || a.digest==null || !a.digest.StartsWith("sha256:")) throw new Exception("Invalid release asset or missing checksum.");
    Directory.CreateDirectory(Home);string temp=Path.Combine(Home,Guid.NewGuid().ToString("N")+".zip");
-   try { using(var w=new WebClient()) { w.Headers["User-Agent"]="BFME2-Test-Lab/1.0.1"; w.DownloadFile(a.browser_download_url,temp); }
+   try { using(var w=new WebClient()) { w.Headers["User-Agent"]="BFME2-Test-Lab/"+AppUpdate.CurrentVersion; w.DownloadFile(a.browser_download_url,temp); }
     if(new FileInfo(temp).Length!=a.size || "sha256:"+Hash(temp)!=a.digest) throw new Exception("Downloaded package checksum failed.");return Import(temp);
    } finally { if(File.Exists(temp)) File.Delete(temp); }
   }

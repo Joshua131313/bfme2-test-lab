@@ -68,6 +68,28 @@ function Get-PatchedBytes([byte[]]$Original, $Record) {
     return ,$result
 }
 
+function Test-100EngineVariant([string]$Path) {
+    # Version labels identify a candidate, not an authenticated original binary.
+    $info = [Diagnostics.FileVersionInfo]::GetVersionInfo($Path)
+    if ($info.FileMajorPart -ne 1 -or $info.FileMinorPart -ne 0 -or $info.FileBuildPart -ne 2194 -or $info.FilePrivatePart -ne 40862) { return $false }
+    [byte[]]$bytes = [IO.File]::ReadAllBytes($Path)
+    if ($bytes.Length -lt 1048576 -or $bytes.Length -gt 100000000 -or $bytes[0] -ne 77 -or $bytes[1] -ne 90) { return $false }
+    $pe = [BitConverter]::ToInt32($bytes, 60)
+    if ($pe -lt 64 -or $pe + 24 -gt $bytes.Length) { return $false }
+    if ([BitConverter]::ToUInt32($bytes, $pe) -ne 17744 -or [BitConverter]::ToUInt16($bytes, $pe + 4) -ne 332) { return $false }
+    $sections = [BitConverter]::ToUInt16($bytes, $pe + 6)
+    $optional = [BitConverter]::ToUInt16($bytes, $pe + 20)
+    $table = $pe + 24 + $optional
+    if ($sections -lt 1 -or $sections -gt 96 -or $optional -lt 96 -or $table + 40 * $sections -gt $bytes.Length -or [BitConverter]::ToUInt16($bytes, $pe + 24) -ne 267) { return $false }
+    for ($i = 0; $i -lt $sections; $i++) {
+        $entry = $table + 40 * $i
+        [long]$size = [BitConverter]::ToUInt32($bytes, $entry + 16)
+        [long]$offset = [BitConverter]::ToUInt32($bytes, $entry + 20)
+        if ($size -gt 0 -and ($offset -lt $table + 40 * $sections -or $offset + $size -gt $bytes.Length)) { return $false }
+    }
+    return $true
+}
+
 $staged = New-Object 'System.Collections.Generic.List[string]'
 $committed = New-Object 'System.Collections.Generic.List[object]'
 try {
@@ -103,6 +125,13 @@ try {
     $root = Resolve-BfmeFolder $GameDirectory
     Write-Host "Game folder: $root"
     $backupRoot = Join-Path $root '_BFME2_TestLab_Backup'
+    foreach ($name in $names) {
+        $diagnosticPath = Join-Path $root $name
+        if (Test-Path -LiteralPath $diagnosticPath -PathType Leaf) {
+            $version = if ($name -eq 'INI.big') { 'data archive' } else { ([Diagnostics.FileVersionInfo]::GetVersionInfo($diagnosticPath)).FileVersion }
+            Write-Host "$name identification: version=$version; size=$((Get-Item -LiteralPath $diagnosticPath).Length); SHA256=$(Get-PathHash $diagnosticPath)"
+        }
+    }
     if ($Action -ne 'Restore') {
         foreach ($base in $manifest.baseline) {
             if ([IO.Path]::IsPathRooted($base.name) -or $base.name -match '(^|[\\/])\.\.([\\/]|$)') { throw 'Unsafe baseline path.' }
@@ -130,6 +159,34 @@ try {
         $overrides = @(Get-ChildItem -LiteralPath $root -File | Where-Object { $_.Name -match '(?i)(BT2DC.*\.big$|^_patch.*\.big$)' })
         if ($overrides.Count -gt 0) { throw 'Later-patch override archives are present. Select 1.00 in the switcher first.' }
     }
+    $variantRecord = $null
+    $variantRoot = Join-Path $root '_BFME2_TestLab_Variant_Backup'
+    $variantLedgerPath = Join-Path $variantRoot 'machine-original.json'
+    $gamePath = Join-Path $root 'game.dat'
+    $gameHash = Get-PathHash $gamePath
+    $engineIsTest = $gameHash -eq $manifest.files[0].patched_sha256 -or $knownHashes['game.dat'] -contains $gameHash
+    $savedVariant = $null
+    if (Test-Path -LiteralPath $variantLedgerPath) {
+        $savedVariant = Get-Content -LiteralPath $variantLedgerPath -Raw | ConvertFrom-Json
+        if ($savedVariant.format -ne 1 -or $savedVariant.sha256 -notmatch '^[a-f0-9]{64}$') { throw 'Invalid machine-original backup record.' }
+    }
+    if ($null -ne $savedVariant -and ($engineIsTest -or $gameHash -eq $savedVariant.sha256)) {
+        $savedEngine = Join-Path $variantRoot 'game.dat.original'
+        if (-not (Test-Path -LiteralPath $savedEngine) -or (Get-PathHash $savedEngine) -ne $savedVariant.sha256 -or -not (Test-100EngineVariant $savedEngine)) { throw 'Machine-original engine backup verification failed.' }
+        $manifest.files[0].original_sha256 = $savedVariant.sha256
+        $manifest.files[0].original_size = (Get-Item -LiteralPath $savedEngine).Length
+        $backupRoot = $variantRoot
+        $variantRecord = $savedVariant
+    } elseif ($gameHash -ne $manifest.files[0].original_sha256 -and -not $engineIsTest) {
+        if (-not (Test-100EngineVariant $gamePath)) { throw 'Unrecognized game.dat. Its version, size and SHA256 are printed above; copy this log for identification. No game files changed.' }
+        if ((Get-PathHash (Join-Path $root 'INI.big')) -ne $manifest.files[1].original_sha256) { throw 'A new 1.00-labelled engine variant requires verified original 1.00 INI.big. No game files changed.' }
+        if ($null -ne $savedVariant -and $savedVariant.sha256 -ne $gameHash) { throw 'A different machine-original variant backup already exists. Keeping it intact; copy the log for assistance.' }
+        $manifest.files[0].original_sha256 = $gameHash
+        $manifest.files[0].original_size = (Get-Item -LiteralPath $gamePath).Length
+        $backupRoot = $variantRoot
+        $variantRecord = [pscustomobject]@{ format=1; sha256=$gameHash; version='1.0.2194.40862'; size=$manifest.files[0].original_size }
+        Write-Warning 'Recognized a structurally valid engine labelled 1.00 with a different hash. This is not an authenticated stock binary. Its exact bytes will be backed up and restored; the test uses the verified replacement engine.'
+    }
     $items = @()
     foreach ($record in $manifest.files) {
         $path = Join-Path $root $record.name
@@ -139,7 +196,7 @@ try {
             throw "Unsupported or changed $($record.name). Select the original 1.00 version in your patch switcher first. No game files were changed."
         }
         $isPatched = $currentHash -ne $record.original_sha256
-        Write-Host "$($record.name): $(if ($isPatched) { if ($currentHash -eq $record.patched_sha256) { $manifest.release } else { 'recognized previous test build' } } else { 'verified original 1.00' })"
+        Write-Host "$($record.name): $(if ($isPatched) { if ($currentHash -eq $record.patched_sha256) { $manifest.release } else { 'recognized previous test build' } } else { if ($record.name -eq 'game.dat' -and $null -ne $variantRecord) { 'machine-original 1.00-labelled variant' } else { 'verified original 1.00' } })"
         $items += [pscustomobject]@{ Record=$record; Path=$path; Current=$current; Hash=$currentHash; IsPatched=$isPatched; Backup=(Join-Path $backupRoot ($record.name + '.original')) }
     }
     if ($Action -eq 'Validate') { Write-Host 'Validation complete. No files changed.'; exit 0 }
@@ -176,6 +233,11 @@ try {
             }
             if ((Get-PathHash $plan.Item.Backup) -ne $plan.Item.Record.original_sha256) { throw 'Backup verification failed.' }
         }
+        if ($null -ne $variantRecord -and -not (Test-Path -LiteralPath $variantLedgerPath)) {
+            [byte[]]$ledgerBytes = [Text.Encoding]::UTF8.GetBytes(($variantRecord | ConvertTo-Json))
+            $ledgerStream = [IO.File]::Open($variantLedgerPath, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write)
+            try { $ledgerStream.Write($ledgerBytes, 0, $ledgerBytes.Length) } finally { $ledgerStream.Dispose() }
+        }
     }
     foreach ($plan in $plans) {
         if ($plan.DesiredHash -eq $plan.Item.Hash) { continue }
@@ -200,7 +262,7 @@ try {
     if ($Action -eq 'Install') {
         Write-Host "$($manifest.release) installed. Start the game using your usual shortcut."
         Write-Host 'Experimental 1.09v3 engine with 1.00 data. See README for compatibility differences.'
-    } else { Write-Host 'Original 1.00 engine, launcher and INI restored and verified.' }
+    } else { Write-Host 'Saved original engine, launcher and INI restored and checksum-verified.' }
     Write-Host "Original backups retained in: $backupRoot"
     exit 0
 } catch {

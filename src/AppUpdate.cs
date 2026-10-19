@@ -13,7 +13,7 @@ namespace BfmeTestLab {
  public class UpdateFile { public string name; public string sha256; }
  public class UpdatePlan { public string target; public string stage; public int parent; public long parentStarted; public UpdateFile[] files; }
  public static class AppUpdate {
-  public const string CurrentVersion="1.0.2";
+  public const string CurrentVersion="1.0.3";
   public static readonly string[] Names={"BFME2-Test-Lab.exe","Apply-Package.ps1","baseline.json","BFME2-TestPackage.zip","README.txt","Install.cmd","Install-App.ps1"};
   public static string Prepare(Release release,string destination) {
    Version version;

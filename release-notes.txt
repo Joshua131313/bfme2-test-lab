@@ -1,7 +1,7 @@
-Adds Update app: downloads and checksum-verifies the latest application ZIP, waits for Test Lab to close, replaces its files with rollback on failure, then reopens it. Game files, test-package selection, settings and original-game backups are not modified by an application update.
+Identifies alternate game.dat files instead of reporting only an unsupported-file error. Check files now prints executable version, file size and SHA-256.
 
-Keeps Get latest files as the separate game-test-package download button. Includes the Maps.big compatibility fix from 1.0.1. Hybrid Test04 is unchanged.
+A structurally valid x86 engine labelled exactly 1.0.2194.40862 can be replaced when original 1.00 INI and core data checks pass. Its exact original bytes and hash are saved in a separate machine-original backup folder. Restore returns that computer's original executable, not our reference copy. This is metadata-based variant recognition, not authentication of the unknown binary. Unknown versions or malformed files remain blocked with useful diagnostics.
 
-Users on 1.0.0/1.0.1 need this one-time application update: download BFME2-Test-Lab-1.0.2.zip, close the old app, extract and run Install.cmd (or run the new EXE). Future releases can be installed with Update app. The application remains unsigned and requests administrator approval.
+Use Update app in Test Lab 1.0.2 or later, wait for it to reopen as 1.0.3, then click Check files and Test changes. The game payload remains Hybrid Test04. This change does not relax launcher, INI or core balance-data checks.
 
-Validation: real helper-process wait/replace/restart test passed, along with app rollback after a locked destination, staged-file tamper rejection, unrelated-file preservation, up-to-date handling, package validation and window rendering. Game installer behavior is unchanged from the 18-scenario-tested 1.0.1 release.
+Validation: 28 installer scenarios passed, including an altered 1.00-labelled PE, exact-byte backup/restore/reinstall, rejection of a damaged original backup, rejection of official 1.06 and truncated executables, map variants, strict core-data checks, migration and rollback. The remote computer's actual executable has not been inspected; unsupported variants now provide identification details in Copy log.
