@@ -1,0 +1,115 @@
+{
+  "format": 2,
+  "release": "BFME2 1.00 Hybrid Test04",
+  "files": [
+    {
+      "name": "game.dat",
+      "original_size": 11037184,
+      "original_sha256": "d79265812638d141c4f02e5924b03100d3f69eaca10a9379cfe14b074fbaf716",
+      "patched_size": 11313184,
+      "patched_sha256": "eda9f40ee6316483d93732ccab6f5ac7ad1142e4b33c99e174ffb1600f327102"
+    },
+    {
+      "name": "INI.big",
+      "original_size": 24018509,
+      "original_sha256": "5112ecb715ce3104dfa87f96c68567be57c1c8f43e8a6a2adf0b019281bb05e2",
+      "patched_size": 24028289,
+      "patched_sha256": "02a666914a3db05732d4e0b6bc15347980b531e452963be2e4dfd2308aa757ee"
+    },
+    {
+      "name": "lotrbfme2.exe",
+      "original_size": 495616,
+      "original_sha256": "dd4dc2ef6d51c8e23378864c570f183e78f7f908a2628c62ee366225e72e8412",
+      "patched_size": 495616,
+      "patched_sha256": "d792180fc6d0dc686f6bef7cbfabfef5f6b9f9e423881279884697f8e4bfccca"
+    }
+  ],
+  "baseline": [
+    {
+      "name": "apt\\CahAppearance.big",
+      "sha256": "934c1ee4d0c3d586b3c98d835a8bc0502dd174b46c4556d60afc3a63f56b788a"
+    },
+    {
+      "name": "apt\\CahManager.big",
+      "sha256": "8971d75a7ffc161e3b4ae8f719061e0e506ec063f6f1c5e731b91d635151f3fb"
+    },
+    {
+      "name": "apt\\GuiFX.big",
+      "sha256": "9a03557114832d00238473c054a96831d03c1f0a87ed972c736acad627a22176"
+    },
+    {
+      "name": "apt\\InGamePlanningMode.big",
+      "sha256": "d4d6ae20e5cac1e5225f53e00fe0b852b669de0b46e9ad128d53771cd9caad2d"
+    },
+    {
+      "name": "apt\\LoadScreen.big",
+      "sha256": "7b0b2dd503d224de96dd3974028962139745a2ccea304f292d052f3da4fbda9f"
+    },
+    {
+      "name": "apt\\OnlineOpenPlay.big",
+      "sha256": "f971592c78a8b5303866f9a64c1704310f89a9cfd5269328488067e5cc128e58"
+    },
+    {
+      "name": "apt\\OnlineQuickMatch.big",
+      "sha256": "28e6405e8a6dbe8f68661b11f864c1f83767cc7d7254efebe0348a5dc78c97ad"
+    },
+    {
+      "name": "apt\\OnlineStrategic.big",
+      "sha256": "7b1901059ba29e3beabf419bd254e7f9a0a4dff057c5921b7dfb1a0ee9aac03b"
+    },
+    {
+      "name": "apt\\Options.big",
+      "sha256": "958eaa2daeeb4691999e34afd67b6cf9c250f955cb1dbbc3851feacd2b3661a6"
+    },
+    {
+      "name": "apt\\SaveLoad.big",
+      "sha256": "dd0e8c1b81a7caf82a82a1bfdd94433f197172399ae4cc7a8d9a331239f389fc"
+    },
+    {
+      "name": "apt\\Skirmish.big",
+      "sha256": "4f5fd32f8805f9a7ea00b98374f4988091c6261378523990850f1c71d8a769d7"
+    },
+    {
+      "name": "apt\\TimeLine.big",
+      "sha256": "3e924f2a4d5a653267085d48c51d368fcf92c157a344ecba5e7173ad52e57794"
+    },
+    {
+      "name": "asset.dat",
+      "sha256": "7455374c3bfb7b7b958d8a5b5f0add5af6fe7ee82c4f7cb0b800dc79314e7ce5"
+    },
+    {
+      "name": "Data1.big",
+      "sha256": "9f5147453ca689a1ceaaa5984e9e875cdccc5638100b426c8a20755b172e8b19"
+    },
+    {
+      "name": "Libraries.big",
+      "sha256": "7395247547825d4584d352899eea61f480224bb57d26545730bb404e76077817"
+    },
+    {
+      "name": "Maps.big",
+      "sha256": "95255431d435e90f6023d049bc847434953d14afa7cf3b877e69bbcb792b2301"
+    }
+  ],
+  "ini_changes": [
+    {
+      "name": "data\\ini\\emotions.ini",
+      "original_sha256": "b8d092e86dcb9f6e186649603b199b42ec0231fc00b1e21fa2af2298d2f51230",
+      "patched_sha256": "11509bedd7d663a28b5671250c877bad5308985468714cfb49c17ddcfa7bd63c"
+    },
+    {
+      "name": "data\\ini\\object\\evilfaction\\hordes\\isengard\\isengardhordes.ini",
+      "original_sha256": "3aa6d64c04d368e143ca2d338c6de3986c049fefb675a1aef5a4b69ca54c5a99",
+      "patched_sha256": "806f32f02559f2a2c07ccc49b71b22adc216af4c16311441f78586ea17685d36"
+    },
+    {
+      "name": "data\\ini\\object\\evilfaction\\hordes\\mordor\\mordorhordes.ini",
+      "original_sha256": "b181b3fd224f4866f385d6e83e8dfbcf438cd36f85a4d7910dfcb7c469df5ac0",
+      "patched_sha256": "1649de0473359da8f460e26dd8c616cd4b1413cb8d0248e93220b8dd2eb3d553"
+    },
+    {
+      "name": "data\\ini\\weapon.ini",
+      "original_sha256": "43c44e5c14923592a60ab829f094d9498322b7f66028a5fad8a284163a427dd4",
+      "patched_sha256": "9e21a7f271abe0b6e4059bacd9e3f281c7728ad038e5dc9be80f5ff3e05c831c"
+    }
+  ]
+}

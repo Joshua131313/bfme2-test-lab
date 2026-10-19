@@ -1,0 +1,59 @@
+BFME2 Test Lab 1.0.0
+
+A small Windows application for testing BFME2 1.00 hybrid patches.
+
+START
+Extract the entire ZIP and run Install.cmd to install the app and create
+desktop/Start-menu shortcuts. Alternatively, run BFME2-Test-Lab.exe directly. Keep the other
+files beside the EXE. Windows asks for administrator approval because BFME2
+is usually installed in Program Files. This app is unsigned. Requires
+Windows 10/11 with .NET Framework 4.7.2 or later (normally already included).
+No Python, Git, PowerShell modules or separate .NET desktop runtime required.
+
+The application finds common BFME2 locations, including names with/without
+'(tm)'. Browse lets you choose another installation. It remembers your choice.
+
+BUTTONS
+Test changes: install the selected test package, backing up original files.
+Restore game: return the engine, launcher and INI to verified original 1.00.
+Check files: identify original, selected test, recognized prior test or
+unsupported files, and check the 1.00 base data without changing game files.
+Get latest files: download the newest test package from GitHub Releases,
+verify its checksum and select it. Click Test changes to apply it.
+Load ZIP: select a test ZIP copied from another computer, without internet.
+Release notes: open the latest GitHub release page (also hosts app updates).
+Copy log: copy diagnostic output for reporting a failed install or a bug.
+
+Test04 is bundled for offline use. Downloads update GAME TEST PACKAGES;
+application updates are downloaded manually from the release page.
+GitHub API rate limits or network failures leave the previous package usable.
+
+COMPATIBILITY
+Start with original 1.00 selected in your patch switcher. Existing Test04 is
+recognized with the included package; its original backups can be reused.
+For an older installed test, load that test ZIP first so the app can recognize
+its hashes, then load/download the newer ZIP. Restore before using a different
+patch switcher. Close the game before Test changes or Restore game.
+
+The app replaces only game.dat, INI.big and lotrbfme2.exe. It verifies original
+baseline data, payload hashes, backups and staged outputs. Failed installs
+attempt rollback. Unknown files are refused. Map packs and optional DLLs are
+not changed. These can still affect gameplay. Backups stay in the game folder
+under _BFME2_TestLab_Backup; previous test backup folders are retained.
+Cached test packages and settings are under %LOCALAPPDATA%\BFME2TestLab.
+
+The bundled build uses the 1.09v3 engine with 1.00 balance data, fear-command
+blocking, accepted Bloodthirsty compatibility changes, and 1.09 swoop timing.
+The timing affects Fellbeasts, mounted Witch-king, Drogoth and Dragon Strike.
+Damage per hit stays 1.00; effective damage per second can change. Fellbeast
+improvement has been user-tested; all abilities and modes are not certified.
+
+SECURITY AND PUBLISHING
+Only fixed manifest/payload files are imported. Scripts inside downloaded
+ZIPs are never run. GitHub asset SHA-256 and individual payload hashes are
+checked. GitHub account compromise could still compromise published binaries;
+hashes are integrity checks, not an independent code signature.
+The source repository contains the app/installer source, not game payloads.
+Release assets hold the test packages. The app does not collect telemetry.
+
+Source and releases: https://github.com/Joshua131313/bfme2-test-lab

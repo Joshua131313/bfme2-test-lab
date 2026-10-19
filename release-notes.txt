@@ -1,0 +1,9 @@
+Small Windows application for installing, restoring and updating BFME2 test builds.
+
+Download BFME2-Test-Lab-1.0.0.zip, extract it, then run Install.cmd for desktop and Start-menu shortcuts. Or run BFME2-Test-Lab.exe directly. Windows requests administrator approval; the app is unsigned.
+
+Includes Hybrid Test04 for offline use. Get latest files downloads and verifies the latest game test package; Test changes installs it. Restore game restores verified original 1.00 engine/launcher/INI files. Existing Test04 backups are supported. Unknown files are refused. Your map packs are preserved.
+
+Test04 retains original 1.00 configured damage, health, speed, costs and other balance data, with documented fear, Bloodthirsty and shared swoop-timing changes. Fellbeast improvement is user-tested; Drogoth shares the changed attack, but its gameplay result and all other abilities/modes are not certified. Timing can affect effective damage per second.
+
+Validation: package import/checksums, corruption rejection, duplicate-manifest rejection, path-traversal entries ignored, window construction/render, 12 installer scenarios including update, restore, backup migration and rollback after a locked destination. Application updates are manual through this release page.
