@@ -11,6 +11,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
 using System.Windows.Forms;
+[assembly: System.Reflection.AssemblyVersion("1.0.2.0")]
+[assembly: System.Reflection.AssemblyFileVersion("1.0.2.0")]
 
 namespace BfmeTestLab {
  public class FileRecord { public string name; public long original_size; public string original_sha256; public long patched_size; public string patched_sha256; }
@@ -80,7 +82,7 @@ namespace BfmeTestLab {
   TextBox game=new TextBox(),log=new TextBox(); Label selected=new Label(),state=new Label();
   string packageDir; bool busy; List<Button> buttons=new List<Button>();
   public MainWindow() {
-   Text="BFME2 Test Lab 1.0.1"; ClientSize=new Size(660,530); MinimumSize=new Size(680,570); Font=new Font("Segoe UI",10);StartPosition=FormStartPosition.CenterScreen;
+   Text="BFME2 Test Lab "+AppUpdate.CurrentVersion; ClientSize=new Size(660,530); MinimumSize=new Size(680,570); Font=new Font("Segoe UI",10);StartPosition=FormStartPosition.CenterScreen;
    BackColor=Color.FromArgb(245,247,250);
    var heading=new Label {Text="BFME2 · 1.00 Test Lab",Font=new Font("Segoe UI",18,FontStyle.Bold),AutoSize=true,Location=new Point(20,16)};Controls.Add(heading);
    Controls.Add(new Label {Text="Apply a test build, restore original files, or download the latest test.",AutoSize=true,Location=new Point(22,56)});
@@ -90,6 +92,13 @@ namespace BfmeTestLab {
    AddButton("Test changes",22,171,142,delegate {RunAction("Install");});
    AddButton("Restore game",180,171,142,delegate {RunAction("Restore");});
    AddButton("Check files",338,171,142,delegate {RunAction("Validate");});
+   AddButton("Update app",496,171,142,delegate {Work(async delegate {
+    Write("Checking for an application update…");
+    string destination=AppDomain.CurrentDomain.BaseDirectory;
+    string plan=await Task.Run(()=>AppUpdate.Prepare(Packages.FetchRelease(),destination));
+    if(plan==null) {Write("Test Lab "+AppUpdate.CurrentVersion+" is up to date.");return;}
+    Save();Write("Update verified. Closing and reopening Test Lab…");AppUpdate.Start(plan);busy=false;Close();
+   });});
    AddButton("Get latest files",22,216,142,delegate {Work(async delegate {packageDir=await Task.Run(()=>Packages.DownloadLatest());Save();RefreshPackage();Write("Latest package downloaded and verified. Click Test changes to install it.");});});
    AddButton("Load ZIP…",180,216,142,delegate {using(var d=new OpenFileDialog {Filter="Test package (*.zip)|*.zip"}) if(d.ShowDialog()==DialogResult.OK) {string path=d.FileName;Work(async delegate {packageDir=await Task.Run(()=>Packages.Import(path));Save();RefreshPackage();Write("Package imported and verified. Click Test changes to install it.");});}});
    AddButton("Release notes",338,216,142,delegate {Process.Start("https://github.com/"+Packages.Repository+"/releases/latest");});
@@ -103,6 +112,7 @@ namespace BfmeTestLab {
     if(string.IsNullOrWhiteSpace(game.Text)) foreach(string root in new[]{Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles)}) foreach(string name in new[]{"The Battle for Middle-earth (tm) II","The Battle for Middle-earth II"}) {string p=Path.Combine(root,"Electronic Arts",name);if(File.Exists(Path.Combine(p,"game.dat")))game.Text=p;}
     if(packageDir==null || !Directory.Exists(packageDir)) packageDir=await Task.Run(()=>Packages.Import(Path.Combine(AppDomain.CurrentDomain.BaseDirectory,"BFME2-TestPackage.zip")));
     RefreshPackage();Save();Write("Ready. Close BFME2 before installing or restoring. Check files identifies the installed build. Your map packs are preserved.");
+    string updateResult=Path.Combine(Packages.Home,"last-app-update.txt");if(File.Exists(updateResult)) {Write(File.ReadAllText(updateResult));File.Delete(updateResult);}
    });};
   }
   void AddButton(string title,int x,int y,int width,Action action) {var b=new Button {Text=title,Location=new Point(x,y),Size=new Size(width,34),FlatStyle=FlatStyle.System};b.Click+=delegate {action();};Controls.Add(b);buttons.Add(b);}
@@ -123,6 +133,7 @@ namespace BfmeTestLab {
  }
  static class Program {
   [STAThread] static void Main(string[] args) {
+   if(args.Length==2 && args[0]=="--complete-update") {AppUpdate.Complete(args[1]);return;}
    if(args.Length==2 && args[0]=="--validate-package") {try {Console.WriteLine(Packages.Validate(args[1]).release);Environment.Exit(0);}catch {Environment.Exit(1);}return;}
    Application.EnableVisualStyles();Application.SetCompatibleTextRenderingDefault(false);Application.Run(new MainWindow());
   }

@@ -1,4 +1,4 @@
-BFME2 Test Lab 1.0.1
+BFME2 Test Lab 1.0.2
 
 A small Windows application for testing BFME2 1.00 hybrid patches.
 
@@ -21,11 +21,13 @@ unsupported files, and check the 1.00 base data without changing game files.
 Get latest files: download the newest test package from GitHub Releases,
 verify its checksum and select it. Click Test changes to apply it.
 Load ZIP: select a test ZIP copied from another computer, without internet.
-Release notes: open the latest GitHub release page (also hosts app updates).
+Update app: download and verify a newer application release, then close,
+replace the app files and reopen automatically. Game files are untouched.
+Release notes: open the latest GitHub release page.
 Copy log: copy diagnostic output for reporting a failed install or a bug.
 
 Test04 is bundled for offline use. Downloads update GAME TEST PACKAGES;
-application updates are downloaded manually from the release page.
+application updates use the separate Update app button.
 GitHub API rate limits or network failures leave the previous package usable.
 
 COMPATIBILITY
@@ -60,7 +62,8 @@ Release assets hold the test packages. The app does not collect telemetry.
 
 Source and releases: https://github.com/Joshua131313/bfme2-test-lab
 
-UPDATING FROM 1.0.0
+UPDATING FROM 1.0.0 OR 1.0.1
 Close the old app, extract this app ZIP, and run Install.cmd again (or run the
 new EXE directly). Get latest files updates game packages, not the app itself.
 There is no need to restore the game just to update this application.
+Once version 1.0.2 is installed, future app updates use Update app.

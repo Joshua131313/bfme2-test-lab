@@ -1,9 +1,7 @@
-Fixes Test Lab rejecting installations whose Maps.big differs from the exact reference 1.00 copy.
+Adds Update app: downloads and checksum-verifies the latest application ZIP, waits for Test Lab to close, replaces its files with rollback on failure, then reopens it. Game files, test-package selection, settings and original-game backups are not modified by an application update.
 
-Download BFME2-Test-Lab-1.0.1.zip, close the old app, extract the ZIP and run Install.cmd again. Or run the new EXE directly. The window title shows 1.0.1. Get latest files in version 1.0.0 only updates game packages and cannot update this installer fix.
+Keeps Get latest files as the separate game-test-package download button. Includes the Maps.big compatibility fix from 1.0.1. Hybrid Test04 is unchanged.
 
-Different readable BIG map archives now produce a warning and are preserved. Missing, truncated or invalid-header Maps.big files are still refused. All other core baseline and engine/INI/launcher checks remain strict. A map hash mismatch is not proof of compatibility; map-specific gameplay and multiplayer still need testing.
+Users on 1.0.0/1.0.1 need this one-time application update: download BFME2-Test-Lab-1.0.2.zip, close the old app, extract and run Install.cmd (or run the new EXE). Future releases can be installed with Update app. The application remains unsigned and requests administrator approval.
 
-The game payload remains Hybrid Test04, unchanged. No restoration is required just to update the app.
-
-Validation: 18 installer scenarios passed, including differing Maps.big install/restore preservation, missing/invalid map rejection, altered Data1.big rejection, backup migration, corrupted payload rejection and rollback. Package import and window construction checks also passed.
+Validation: real helper-process wait/replace/restart test passed, along with app rollback after a locked destination, staged-file tamper rejection, unrelated-file preservation, up-to-date handling, package validation and window rendering. Game installer behavior is unchanged from the 18-scenario-tested 1.0.1 release.
