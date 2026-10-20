@@ -28,7 +28,7 @@ elif sys.argv[1]=='publish':
     try:release=request(BASE+'/releases/tags/'+TAG)
     except urllib.error.HTTPError as e:
         if e.code!=404:raise
-        release=request(BASE+'/releases',{'tag_name':TAG,'target_commitish':commit,'name':'BFME2 Test Lab '+VERSION+' - Hybrid Test04','body':body,'draft':True},'POST')
+        release=request(BASE+'/releases',{'tag_name':TAG,'target_commitish':commit,'name':'BFME2 Test Lab '+VERSION+' - Hybrid Test05','body':body,'draft':True},'POST')
     for name in ['BFME2-Test-Lab-'+VERSION+'.zip','BFME2-TestPackage.zip']:
         p=ROOT/'build'/name;data=p.read_bytes()
         assets=request(BASE+'/releases/'+str(release['id'])+'/assets');asset=next((a for a in assets if a['name']==name),None)

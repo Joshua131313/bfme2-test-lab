@@ -1,4 +1,4 @@
-BFME2 Test Lab 1.0.4
+BFME2 Test Lab 1.0.5
 
 A small Windows application for testing BFME2 1.00 hybrid patches.
 
@@ -26,7 +26,7 @@ replace the app files and reopen automatically. Game files are untouched.
 Release notes: open the latest GitHub release page.
 Copy log: copy diagnostic output for reporting a failed install or a bug.
 
-Test04 is bundled for offline use. Downloads update GAME TEST PACKAGES;
+Test05 is bundled for offline use. Downloads update GAME TEST PACKAGES;
 application updates use the separate Update app button.
 GitHub API rate limits or network failures leave the previous package usable.
 
@@ -84,3 +84,8 @@ The exact released Test01 game.dat and INI.big hashes are recognized without
 importing its older format-1 package. Its verified original backups under
 _BFME2_100_Test01_Backup are reused for upgrade/restore. Missing or corrupt
 original backups still stop installation rather than treating Test01 as stock.
+
+HYBRID TEST05 (1.0.5)
+Candidate fear/stance fix: 1.09v3 engine with a custom guard on player group stance orders. Orders are rejected while the AI command-lock flag is active. Data and launcher are byte-identical to Test04. This is not an in-game confirmed fix.
+Existing users: Update app, then Get latest files, then Test changes with BFME2 closed. All multiplayer participants need the same build. Restore game restores backed-up originals.
+Validation: 40 x86 guard cases passed; Windows image mapping and package import passed.

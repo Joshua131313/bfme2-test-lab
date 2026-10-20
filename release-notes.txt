@@ -1,5 +1,7 @@
-Fixes upgrading from the original Test01 patch. The reported game.dat and INI.big hashes match that exact old release. Test Lab now recognizes those two hashes explicitly, instead of classifying the engine as an unknown 1.00 variant and rejecting its modified INI.
+BFME2 Test Lab 1.0.5 bundles Hybrid Test05 and serves it through Get latest files.
 
-Use Update app, wait for 1.0.4 to reopen, then click Test changes. Keep the original _BFME2_100_Test01_Backup folder in the game directory: its original files are verified and reused. Missing/corrupt originals are not bypassed. No manual DLL or game-file replacement is needed. The game package remains Hybrid Test04.
+Existing users: click Update app, then Get latest files, then Test changes with BFME2 closed. Updating the app alone does not apply game files or replace the selected cached package.
 
-Validation: reproduced the exact Test01 game.dat and INI.big hashes from the report; identification, missing-backup refusal, successful upgrade, repeat install, original restore and unknown-INI refusal all passed. Existing original backups remain intact.
+Test05 is a candidate fix for stance changes interrupting fear. It adds a custom guard to the 1.09v3 engine player stance-order handler: reject stance orders while the AI command-lock flag is active. It is no longer byte-identical to stock 1.09v3. The launcher and all game data are byte-identical to Test04, preserving its 1.00 balance and flying-attack settings.
+
+Validation: 40 x86 emulation cases passed, including allowed/blocked paths, null owner/AI, register and stack preservation. Windows executable image mapping and Test Lab ZIP import/checksums passed. The gameplay fix is not yet confirmed. All multiplayer players must use the same build. Original backups and Restore game remain available.
